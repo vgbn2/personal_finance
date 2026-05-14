@@ -1,0 +1,16 @@
+features:
+  technical:
+    returns: [1, 5, 20, 60]
+    volatility: [20, 60]
+    indicators: ["rsi", "macd", "atr", "bollinger_bands"]
+  macro:
+    enabled: false
+    fields: ["inflation", "policy_rate", "yield_curve_slope", "wage_growth", "consumer_sentiment"]
+  sentiment:
+    enabled: false
+    fields: ["news_score", "survey_score", "social_score"]
+cnn:
+  lookback_window: 64
+  horizon: 5
+  normalize: true
+  reject_incomplete_windows: true
