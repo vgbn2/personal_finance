@@ -5,6 +5,17 @@ build/
 cpp_core/build/
 cli/target/
 web/node_modules/
+graphify-out/
+
+# Local agent/workflow state
+.agent/
+.agents/
+.gemini/
+.gsd/
+
+# Local IDE and tooling caches
+.clangd
+.vscode/tasks.json
 
 # OS/IDE
 .DS_Store
@@ -14,6 +25,8 @@ web/node_modules/
 
 # Secrets
 .env
+.env.*
+*.env
 *.key
 *.pem
 storage/secrets/
@@ -29,3 +42,4 @@ storage/exports/*.csv
 *.so
 *.dylib
 *.dll
+
