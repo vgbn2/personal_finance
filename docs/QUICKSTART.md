@@ -90,10 +90,7 @@ The exact regression target used by the test is:
 
 For current scaffold work:
 
-- file-name ownership: `docs/scaffold_manifest.md`
-- asset and data contract: `docs/data_ingestion.md`
-- CNN pipeline: `docs/cnn_pipeline.md`
-- execution and portfolio monitoring: `docs/execution_portfolio.md`
+- scope, module ownership, and all data/CNN/research/execution contracts: `docs/SPECIFICATION.md`
 - core scaffold folders: `cpp_core/src/assets`, `cpp_core/src/data`, `cpp_core/src/ingestion`, `cpp_core/src/features`, `cpp_core/src/ml`, `cpp_core/src/research`, `cpp_core/src/risk`, `cpp_core/src/execution`, `cpp_core/src/portfolio`
 
 Do not add live data downloads, model inference, broker calls, or portfolio-monitoring side effects until the corresponding phase is opened.

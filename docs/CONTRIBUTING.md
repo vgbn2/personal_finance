@@ -7,9 +7,9 @@ This project is meant for several contributors. Keep changes understandable, bou
 Read:
 
 - `docs/README.md`
+- `docs/SPECIFICATION.md`
+- `docs/ARCHITECTURE.md`
 - `docs/QUICKSTART.md`
-- `docs/spec.md`
-- `docs/engineering.md`
 
 Then identify which phase your change belongs to. If the phase is not active, discuss the change before implementing it.
 
@@ -61,12 +61,10 @@ Update docs in the same change when you alter:
 Use the right document:
 
 - `README.md` in `docs`: orientation
+- `SPECIFICATION.md`: scope, contracts, phase roadmap, future web/deployment plans
+- `ARCHITECTURE.md`: system shape — core engine, I/O boundaries, interfaces
 - `QUICKSTART.md`: build and run commands
-- `spec.md`: product behavior and phase scope
-- `engineering.md`: architecture and code boundaries
 - `operations.md`: verification and troubleshooting
-- `DEPLOYMENT.md`: future deployment plan
-- `web_api.md`: future web/API plan
 
 ## Test Expectations
 

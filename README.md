@@ -8,15 +8,12 @@ The earlier personal-finance/wealth work is legacy context. Treat it as done unl
 
 Read the documentation in this order:
 
-1. `docs/README.md`
-2. `docs/QUICKSTART.md`
-3. `docs/spec.md`
-4. `docs/engineering.md`
-5. `docs/scaffold_manifest.md`
-6. `docs/data_ingestion.md`
-7. `docs/cnn_pipeline.md`
-8. `docs/execution_portfolio.md`
-9. `docs/CONTRIBUTING.md`
+1. `docs/README.md` — docs index
+2. `docs/SPECIFICATION.md` — single source of truth: scope, contracts, roadmap
+3. `docs/ARCHITECTURE.md` — system shape: core engine, I/O boundaries, interfaces
+4. `docs/QUICKSTART.md` — build, test, run
+5. `docs/operations.md` — dev loop, verification, troubleshooting
+6. `docs/CONTRIBUTING.md` — contribution rules
 
 ## Current Phase
 
