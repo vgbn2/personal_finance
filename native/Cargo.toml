@@ -1,0 +1,3 @@
+[workspace]
+members = ["../backend/cli", "../backend/polymarket-cli"]
+# Add crates/* here as Rust migration progresses

@@ -1,0 +1,129 @@
+#!/usr/bin/env node
+
+require('#shared/env');
+global.suppressLogs = false;
+const utils = require('./lib/utils.js');
+const { pageText, helpText, printPayload, logger } = utils;
+
+const { commandStatus, commandCockpit } = require('./commands/status.js');
+const { commandBackend } = require('./commands/tools/backend.js');
+const { commandQuotes } = require('./commands/quotes/quotes.js');
+const { commandStrategy } = require('./commands/strategy/strategy.js');
+const { commandBacktest, commandOptimize, commandEdgeDecay, commandDemo, commandIndicators, commandModelCompare } = require('./commands/research/research.js');
+const { commandWatch, commandIngest, commandBackfill, commandMassBackfill, commandCacheClean, commandValidate, commandPrune, commandLoc, commandUniverse } = require('./commands/data/data.js');
+const { commandTrade, buildTradeGatewayLaunch, commandMt5, commandMt5Profile, commandMt5Connect, commandMt5Bridge, commandAutoTrade, commandAddPlatform, commandAgent, commandPolymarket, commandBot } = require('./commands/trade/trade.js');
+const { commandLogin, commandRegister, commandLogout, commandAuthStatus } = require('./commands/auth.js');
+const { installDoubleCtrlCExit } = require('./lib/exit_guard');
+
+installDoubleCtrlCExit();
+
+async function handleCommand(args) {
+  const isDebug = args.includes('--debug') || process.env.SOVEREIGN_DEBUG === 'true';
+  if (isDebug) logger.info('Debug mode active');
+
+  const command = args[0];
+  if (!command || command === '--help' || command === '-h' || command === 'help') {
+    const topic = command === 'help' ? (args[1] || 'overview') : 'overview';
+    pageText(helpText(topic), args.slice(command === 'help' ? 2 : 1));
+    return 0;
+  }
+  // Canonical names match the COMMAND_MANIFEST in tui/manifest.js.
+  // Aliases below are CLI-only shorthands not shown in the TUI menu.
+  const handlers = {
+    // --- Operational (manifest: op) ---
+    status:           (a) => commandStatus(a),
+    cockpit:          (a) => commandCockpit(a),
+    watch:            (a) => commandWatch(a),
+    ingest:           (a) => commandIngest(a),
+    backfill:         (a) => commandBackfill(a),
+    'mass-backfill':  (a) => commandMassBackfill(a),
+    'cache-clean':    (a) => commandCacheClean(a),
+    universe:         (a) => commandUniverse(a),
+    check:            (a) => commandValidate(a),
+    // --- Backend (manifest: backend) ---
+    backend:          (a) => commandBackend(a),
+    // --- Research (manifest: research) ---
+    bt:               (a) => commandBacktest(a),
+    features:         (a) => commandIndicators(a),
+    models:           (a) => commandModelCompare(a),
+    optimize:         (a) => commandOptimize(a),
+    'edge-decay':     (a) => commandEdgeDecay(a),
+    // --- Trade (manifest: trade) ---
+    trade:            (a) => commandTrade(a),
+    alpaca:           (a) => commandTrade(a),
+    mt5:              (a) => commandMt5(a),
+    'add-platform':   (a) => commandAddPlatform(a),
+    'auto-trade':     (a) => commandAutoTrade(a),
+    agent:            (a) => commandAgent(a),
+    polymarket:       (a) => commandPolymarket(a),
+    bot:              (a) => commandBot(a),
+    // --- Account (manifest: account) ---
+    login:            (a) => commandLogin(a),
+    register:         (a) => commandRegister(a),
+    logout:           () =>  commandLogout(),
+    'auth-status':    () =>  commandAuthStatus(),
+    // --- CLI-only aliases (not in TUI manifest) ---
+    clean:            (a) => commandCacheClean(a),   // alias: cache-clean
+    validate:         (a) => commandValidate(a),      // alias: check
+    backtest:         (a) => commandBacktest(a),      // alias: bt
+    indicators:       (a) => commandIndicators(a),    // alias: features
+    quotes:           (a) => commandQuotes(a),
+    'mt5-profile':    (a) => commandMt5Profile(a),
+    'mt5-connect':    (a) => commandMt5Connect(a),
+    'mt5-bridge':     (a) => commandMt5Bridge(a),
+    prune:            (a) => commandPrune(a),
+    'db-prune':       (a) => commandPrune(a),
+    demo:             (a) => commandDemo(a),
+    loc:              (a) => commandLoc(a),
+    whoami:           () =>  commandAuthStatus(),     // alias: auth-status
+  };
+
+  const handler = handlers[command];
+  if (!handler) {
+    printPayload({ error: 'Unknown command: ' + command }, args);
+    return 1;
+  }
+  return await handler(args.slice(1));
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  if (args.length > 0) {
+    return await handleCommand(args);
+  }
+
+  // Persistent TUI menu loop when no args provided
+  const { runInteractiveMenu, buildStatusLine } = utils;
+  const { setAuthEmail, setStatusLine } = require('./tui/engine/engine.js');
+  const authLib = require('./lib/auth');
+  const user = await authLib.getAuthenticatedUser().catch(() => null);
+  if (user?.email) setAuthEmail(user.email);
+  setStatusLine(buildStatusLine(user?.email || null));
+  await runInteractiveMenu(handleCommand);
+  return 0;
+}
+
+if (require.main === module) {
+  main()
+    .then((code) => {
+      process.exitCode = Number.isInteger(code) ? code : 0;
+    })
+    .catch((error) => {
+      console.error(error.stack || error.message);
+      process.exitCode = 1;
+    });
+}
+
+module.exports = {
+  handleCommand,
+  buildTradeGatewayLaunch,
+  commandCockpit,
+  renderCockpit: require('./commands/status.js').renderCockpit,
+  currentPhaseLabel: utils.currentPhaseLabel,
+  quoteProviderHeaderState: require('./commands/status.js').quoteProviderHeaderState,
+  cryptoLimitForWindow: require('./commands/research/research.js').cryptoLimitForWindow,
+  filterCandlesByWindow: require('./commands/research/research.js').filterCandlesByWindow,
+  historicalWindowFromArgs: require('./commands/research/research.js').historicalWindowFromArgs,
+  buildCockpitModel: require('./commands/status.js').buildCockpitModel,
+  backtestDataQualityError: require('./commands/research/research.js').backtestDataQualityError,
+};
